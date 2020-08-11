@@ -1,29 +1,20 @@
 pipeline {
-  agent any
+  agent any  
   options {
     // Keep the 10 most recent builds
-    buildDiscarder(logRotator(numToKeepStr:'10'))
+    buildDiscarder(logRotator(numToKeepStr:'10')) 
   }
   stages {
-    stage ('Install') {
+    stage ('Build') { 
       steps {
         // install required gems
-        sh 'bundle install'
-      }
-    }
-    stage ('Build') {
-      steps {
-        // build
-        sh 'bundle exec rake build'
+        sh 'Run bundle install'
+
+        // build and run tests with coverage
+        sh 'bundle exec rake build spec'
 
         // Archive the built artifacts
         archive includes: 'pkg/*.gem'
-      }
-    }
-    stage ('Test') {
-      steps {
-        // run tests with coverage
-        sh 'bundle exec rake spec'
 
         // publish html
         publishHTML target: [
